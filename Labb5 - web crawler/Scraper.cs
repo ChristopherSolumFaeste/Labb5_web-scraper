@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -8,7 +10,11 @@ namespace Labb5___web_crawler
 {
     public partial class Scraper : Form
     {
+        public string filePath;
+        List<Task<byte[]>> imageData;
         HttpClient client = new HttpClient();
+        
+        int counter = 1;
         public Scraper()
         {
             InitializeComponent();
@@ -47,11 +53,23 @@ namespace Labb5___web_crawler
         {
             FolderBrowserDialog imageFolderDialog = new FolderBrowserDialog();
             imageFolderDialog.ShowDialog();
-            //imageFolderDialog.SelectedPath
+            filePath = imageFolderDialog.SelectedPath;
+            foreach (string url in urlListBox.Items)
+            {
+                imageData.Add(client.GetByteArrayAsync(url));
+            }
         }
-        private async Task<T> ImageScraper(string filepath)
+
+        private async Task SaveFile()
         {
-            client.GetByteArrayAsync(urlListBox.);
+            FileStream fileStream = new FileStream(filePath + $"\\image{counter}", FileMode.CreateNew);
+            while (imageData.Count > 0)
+            {
+                Task<byte[]> savedImage = await Task.WhenAny(imageData);
+                await fileStream.WriteAsync(savedImage.Result, 0, savedImage.Result.Length);
+                imageData.Remove(savedImage);
+                counter++;
+            }
         }
     }
 }
