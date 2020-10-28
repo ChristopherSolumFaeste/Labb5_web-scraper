@@ -1,4 +1,4 @@
-﻿namespace Labb5___web_crawler
+﻿namespace Labb5_web_scraper
 {
     partial class Scraper
     {
@@ -33,6 +33,7 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.numberOfURLLabel = new System.Windows.Forms.Label();
             this.urlListBox = new System.Windows.Forms.ListBox();
+            this.savedResultLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // URLTextBox
@@ -44,6 +45,7 @@
             this.URLTextBox.Size = new System.Drawing.Size(775, 22);
             this.URLTextBox.TabIndex = 0;
             this.URLTextBox.Text = "https://www.gp.se/";
+            this.URLTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.URLTextBox_KeyDown);
             // 
             // extractButton
             // 
@@ -58,6 +60,7 @@
             // saveButton
             // 
             this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveButton.Enabled = false;
             this.saveButton.Location = new System.Drawing.Point(680, 41);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(107, 23);
@@ -70,10 +73,12 @@
             // 
             this.numberOfURLLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.numberOfURLLabel.AutoSize = true;
-            this.numberOfURLLabel.Location = new System.Drawing.Point(12, 448);
+            this.numberOfURLLabel.Location = new System.Drawing.Point(12, 447);
             this.numberOfURLLabel.Name = "numberOfURLLabel";
-            this.numberOfURLLabel.Size = new System.Drawing.Size(0, 17);
+            this.numberOfURLLabel.Size = new System.Drawing.Size(38, 17);
             this.numberOfURLLabel.TabIndex = 4;
+            this.numberOfURLLabel.Text = "label";
+            this.numberOfURLLabel.Visible = false;
             // 
             // urlListBox
             // 
@@ -87,18 +92,31 @@
             this.urlListBox.Size = new System.Drawing.Size(772, 372);
             this.urlListBox.TabIndex = 5;
             // 
+            // savedResultLabel
+            // 
+            this.savedResultLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.savedResultLabel.AutoSize = true;
+            this.savedResultLabel.Location = new System.Drawing.Point(463, 448);
+            this.savedResultLabel.Name = "savedResultLabel";
+            this.savedResultLabel.Size = new System.Drawing.Size(38, 17);
+            this.savedResultLabel.TabIndex = 6;
+            this.savedResultLabel.Text = "label";
+            this.savedResultLabel.Visible = false;
+            // 
             // Scraper
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 474);
+            this.Controls.Add(this.savedResultLabel);
             this.Controls.Add(this.urlListBox);
             this.Controls.Add(this.numberOfURLLabel);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.extractButton);
             this.Controls.Add(this.URLTextBox);
+            this.MinimumSize = new System.Drawing.Size(818, 521);
             this.Name = "Scraper";
-            this.Text = "Form1";
+            this.Text = "GP-skraparn\'";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -111,6 +129,7 @@
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Label numberOfURLLabel;
         private System.Windows.Forms.ListBox urlListBox;
+        private System.Windows.Forms.Label savedResultLabel;
     }
 }
 

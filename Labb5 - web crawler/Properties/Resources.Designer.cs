@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Labb5___web_crawler.Properties
+namespace Labb5_web_scraper.Properties
 {
 
 

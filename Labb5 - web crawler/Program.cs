@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Labb5___web_crawler
+namespace Labb5_web_scraper
 {
     static class Program
     {

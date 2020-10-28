@@ -6,69 +6,151 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Labb5___web_crawler
+namespace Labb5_web_scraper
 {
     public partial class Scraper : Form
     {
         public string filePath;
-        List<Task<byte[]>> imageData;
-        HttpClient client = new HttpClient();
         
+        HttpClient client = new HttpClient();
         int counter = 1;
+
         public Scraper()
         {
             InitializeComponent();
         }
-
-        private void extractButton_Click(object sender, EventArgs e)
+        private async void extractButton_Click(object sender, EventArgs e)
         {
-            GetWebpageHTML(URLTextBox.Text.ToString());
-            numberOfURLLabel.Text = $"Number of images found: {urlListBox.Items.Count}";
-        }
-        private void GetWebpageHTML(string url)
-        {
-            Task<string> download = client.GetStringAsync(url);
-            download.Wait();
-
-            string temp = @"(?<=<img .*src.*=.*"")([^"">]+.(?:jpg|png|bmp|jpeg|gif))[^""|^?]?";
-            string urlTemp = "";
-            Regex regex = new Regex(temp);
-            if (regex.IsMatch(download.Result))
+            urlListBox.Items.Clear();
+            try
             {
-                foreach (Match match in regex.Matches(download.Result))
+                if (URLTextBox.Text.Contains("http"))
                 {
-                    if (!match.Value.StartsWith("http"))
+                    await GetWebpageHTML(URLTextBox.Text);
+                    numberOfURLLabel.Text = $"Number of images found: {urlListBox.Items.Count}";
+                }
+                else
+                {
+                    URLTextBox.Text = "https://" + URLTextBox.Text;
+                    await GetWebpageHTML(URLTextBox.Text);
+                    numberOfURLLabel.Text = $"Number of images found: {urlListBox.Items.Count}";
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Invalid URL");
+            }
+            if (urlListBox.Items.Count > 0)
+            {
+                saveButton.Enabled = true;
+            }
+            numberOfURLLabel.Visible = true;
+        }
+        private async Task GetWebpageHTML(string url)
+        {
+            using (Task<string> download = client.GetStringAsync(url))
+            {
+
+                await download;
+                string urlTemp;
+                Regex regex = new Regex(@"(?<=<img.*src="").+?(?="".*"">)");
+                if (regex.IsMatch(download.Result))
+                {
+                    foreach (Match match in regex.Matches(download.Result))
                     {
-                        urlTemp = "https://gp.se" + match.Value;
+                        if (!match.Value.StartsWith("http"))
+                        {
+                            urlTemp = URLTextBox.Text + match.Value;
+                        }
+                        else
+                        {
+                            urlTemp = match.Value;
+                        }
+                        urlListBox.Items.Add(urlTemp + Environment.NewLine);
                     }
-                    else
-                    {
-                        urlTemp = match.Value;
-                    }
-                    urlListBox.Items.Add(urlTemp + Environment.NewLine);
                 }
             }
         }
-        private void saveButton_Click(object sender, EventArgs e)
+        private async void saveButton_Click(object sender, EventArgs e)
         {
+            int failedCounter = 0;
+            saveButton.Enabled = false;
+
+            List<Task<byte[]>> imageData = new List<Task<byte[]>>();
             FolderBrowserDialog imageFolderDialog = new FolderBrowserDialog();
+
             imageFolderDialog.ShowDialog();
             filePath = imageFolderDialog.SelectedPath;
+
             foreach (string url in urlListBox.Items)
             {
-                imageData.Add(client.GetByteArrayAsync(url));
+                try
+                {
+                    imageData.Add(client.GetByteArrayAsync(url.Trim()));
+                }
+                catch
+                {
+                    continue;
+                }
             }
-        }
 
-        private async Task SaveFile()
-        {
-            FileStream fileStream = new FileStream(filePath + $"\\image{counter}", FileMode.CreateNew);
+            savedResultLabel.Visible = true;
+
             while (imageData.Count > 0)
             {
-                Task<byte[]> savedImage = await Task.WhenAny(imageData);
-                await fileStream.WriteAsync(savedImage.Result, 0, savedImage.Result.Length);
-                imageData.Remove(savedImage);
-                counter++;
+                Task<byte[]> task = null;
+                try
+                {
+                    using (task = await Task.WhenAny(imageData))
+                    {
+                        await SaveFileAsync(task.Result);
+                    }
+                }
+                catch
+                {
+                    failedCounter++;
+                }
+                finally
+                {
+                    imageData.Remove(task);
+                }
+                savedResultLabel.Text = $"{counter - 1} images saved to disk. {failedCounter} failed.";
+            }
+        }
+        private async Task SaveFileAsync(byte[] imageDataArray)
+        {
+            string fileType;
+            switch (imageDataArray[0])
+            {
+                case 255:
+                    fileType = ".jpg";
+                    break;
+                case 137:
+                    fileType = ".png";
+                    break;
+                case 47:
+                    fileType = ".gif";
+                    break;
+                case 66:
+                    fileType = ".bmp";
+                    break;
+                default:
+                    throw new Exception();
+            }
+            using (FileStream fileStream = new FileStream(filePath + $"\\image{counter}" + 
+                                            fileType, FileMode.CreateNew))
+            {
+                await fileStream.WriteAsync(imageDataArray, 0, imageDataArray.Length);
+            }
+            counter++;
+        }
+        private void URLTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                extractButton.PerformClick();
+                e.SuppressKeyPress = true;
+                e.Handled = true;
             }
         }
     }
