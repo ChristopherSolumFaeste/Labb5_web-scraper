@@ -38,21 +38,24 @@ namespace Labb5_web_scraper
             }
             catch
             {
-                MessageBox.Show("Invalid URL");
+                MessageBox.Show("Webpage not found!\n" +
+                                "(Invalid URL?)");
             }
+
             if (urlListBox.Items.Count > 0)
             {
                 saveButton.Enabled = true;
             }
+
             numberOfURLLabel.Visible = true;
         }
         private async Task GetWebpageHTML(string url)
         {
             using (Task<string> download = client.GetStringAsync(url))
             {
-
                 await download;
-                string urlTemp;
+                string userInputURL;
+
                 Regex regex = new Regex(@"(?<=<img.*src="").+?(?="".*"">)");
                 if (regex.IsMatch(download.Result))
                 {
@@ -60,13 +63,13 @@ namespace Labb5_web_scraper
                     {
                         if (!match.Value.StartsWith("http"))
                         {
-                            urlTemp = URLTextBox.Text + match.Value;
+                            userInputURL = URLTextBox.Text + match.Value;
                         }
                         else
                         {
-                            urlTemp = match.Value;
+                            userInputURL = match.Value;
                         }
-                        urlListBox.Items.Add(urlTemp + Environment.NewLine);
+                        urlListBox.Items.Add(userInputURL + Environment.NewLine);
                     }
                 }
             }
@@ -116,6 +119,7 @@ namespace Labb5_web_scraper
                 }
                 savedResultLabel.Text = $"{counter - 1} images saved to disk. {failedCounter} failed.";
             }
+            MessageBox.Show("Download complete!");
         }
         private async Task SaveFileAsync(byte[] imageDataArray)
         {

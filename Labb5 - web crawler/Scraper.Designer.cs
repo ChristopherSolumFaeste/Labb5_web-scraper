@@ -116,7 +116,7 @@
             this.Controls.Add(this.URLTextBox);
             this.MinimumSize = new System.Drawing.Size(818, 521);
             this.Name = "Scraper";
-            this.Text = "GP-skraparn\'";
+            this.Text = "GP-skrapan";
             this.ResumeLayout(false);
             this.PerformLayout();
 
