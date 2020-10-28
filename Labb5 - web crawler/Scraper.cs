@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace Labb5_web_scraper
 {
     public partial class Scraper : Form
-    {
+    { 
         public string filePath;
         
         HttpClient client = new HttpClient();
