@@ -11,9 +11,9 @@ namespace Labb5_web_scraper
     public partial class Scraper : Form
     { 
         public string filePath;
+        int counter = 1;
         
         HttpClient client = new HttpClient();
-        int counter = 1;
 
         public Scraper()
         {
@@ -40,6 +40,7 @@ namespace Labb5_web_scraper
             {
                 MessageBox.Show("Webpage not found!\n" +
                                 "(Invalid URL?)");
+                numberOfURLLabel.Text = "No images found!";
             }
 
             if (urlListBox.Items.Count > 0)

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Scraper));
             this.URLTextBox = new System.Windows.Forms.TextBox();
             this.extractButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
@@ -114,6 +115,7 @@
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.extractButton);
             this.Controls.Add(this.URLTextBox);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(818, 521);
             this.Name = "Scraper";
             this.Text = "GP-skrapan";
